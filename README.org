@@ -1,0 +1,53 @@
+#+STARTUP: showall indent
+#+OPTIONS: tex:t toc:nil
+#+ODT_STYLES_FILE: "styles.xml"
+
+#+TITLE: Configuring Mac OS Catalina
+#+AUTHOR: Derek Devnich
+
+* Ergonomics
+1. Remove password quality restrictions
+   #+BEGIN_SRC bash
+   pwpolicy -clearaccountpolicies
+   #+END_SRC
+
+* Keyboard and Touch Bar
+
+* Sound
+
+* Firewall
+1. Enable
+2. Activate stealth mode
+
+* SSH
+1. Copy .ssh
+2. Set permissions
+   - .ssh directory: 700
+   - public keys (*.pub): 644
+   - all other files: 600
+
+* Fonts
+Download and install Deja Vu fonts
+
+* Full Disk access
+1. Terminal
+
+* Developer access (what does this do?)
+
+* XCode command line tools (git)
+1. Manually download and install; command line installation fails (also permissions-based?)
+
+* Package Manager (Nix)
+1. Create .profile
+2. Create new disk and mount point
+3. Download install, Curl doesn't work (refusal to execute script?)
+
+* Catalina performance
+
+* Settings export
+
+* COMMENT Footer
+;; Local Variables:
+;; eval: (visual-line-mode)
+;; eval: (flyspell-mode)
+;; End:
