@@ -236,35 +236,28 @@ Install dot files from https://github.com/devnich/dotfiles (NB: Some of these, s
    make serve
    #+END_SRC
 
-* TODO Use specific Python and R environments in Jupyter/RStudio
-
-* TODO Emacs Python/R workflow
-** Conda environments and Anaconda mode
-https://github.com/necaris/conda.el
-** R environments
-** graphs, tables, and other output
-
-* TODO sorting by file/process provides stable sort of files but not directories
-
-* TODO Fix Xquartz and imagemagick in Emacs
-https://imagemagick.org/script/display.php
-https://imagemagick.org/script/download.php
-https://www.xquartz.org/FAQs.html
-
-* TODO System-aware themes in Emacs
-
-* TODO zsh configuration
-1. [DONE] Customize colors
-   https://geoff.greer.fm/lscolors/
-2. completions?
-3. completions for nix?
-4. fish-like syntax highlighting and other modifications?
-5. Customize prompt?
-6. oh-my-zsh?
-
-* TODO Nix profile management with delegated update (e.g. NPM, apps, conda, R)
-
-* TODO Settings export with Nix
+* TO DO
+1. Use specific Python and R environments in Jupyter/RStudio
+2. Emacs Python/R workflow
+   1. Conda environments and Anaconda mode: https://github.com/necaris/conda.el
+   2. R environments
+   3. graphs, tables, and other output
+3. sorting by file/process provides stable sort of files but not directories
+4. Fix Xquartz and imagemagick in Emacs
+     https://imagemagick.org/script/display.php
+     https://imagemagick.org/script/download.php
+     https://www.xquartz.org/FAQs.html
+5. System-aware themes in Emacs
+6. zsh configuration
+   1. [DONE] Customize colors
+      https://geoff.greer.fm/lscolors/
+   2. completions?
+   3. completions for nix?
+   4. fish-like syntax highlighting and other modifications?
+   5. Customize prompt?
+   6. oh-my-zsh?
+7. Nix profile management with delegated update (e.g. NPM, apps, conda, R)
+8. Settings export with Nix
 
 * DEPRECATED Install R using conda
    cf. https://community.rstudio.com/t/why-not-r-via-conda/9438/4
@@ -275,11 +268,6 @@ https://www.xquartz.org/FAQs.html
    #+END_SRC
 
 * INFO Catalina performance
-CLOSED: [2020-06-27 Sat 16:22]
-:LOGBOOK:
-- State "INFO"       from "TODO"       [2020-06-27 Sat 16:22] \\
-  Waiting for better information about Catalina interaction with Emacs and its subprocesses.
-:END:
 1. Round-trip for checking scripts - visible on emacs .org file open?
 2. Forbid outgoing connections for syspolicyd to  api.apple-cloudkit.com via pfctl (command line) or Murus (GUI)?
    #+BEGIN_SRC bash
