@@ -1,53 +1,289 @@
 #+STARTUP: showall indent
-#+OPTIONS: tex:t toc:nil
-#+ODT_STYLES_FILE: "styles.xml"
+#+OPTIONS: tex:t title:t toc:nil
+#+ODT_STYLES_FILE: "/Users/gilgamesh/Google Drive/Templates/styles.xml"
 
-#+TITLE: Configuring Mac OS Catalina
+#+TITLE: Configuring Mac OS Catalina for Research Computing
 #+AUTHOR: Derek Devnich
 
-* Ergonomics
+* Login
 1. Remove password quality restrictions
    #+BEGIN_SRC bash
    pwpolicy -clearaccountpolicies
    #+END_SRC
-
-* Keyboard and Touch Bar
-
-* Sound
+2. Disable Global Protect VPN autostart
+   https://www.robertsetiadi.com/disabling-globalprotect-vpn-auto-run-during-mac-start-up/
 
 * Firewall
 1. Enable
 2. Activate stealth mode
 
 * SSH
-1. Copy .ssh
+1. Copy .ssh directory from old machine
 2. Set permissions
-   - .ssh directory: 700
-   - public keys (*.pub): 644
-   - all other files: 600
+   #+BEGIN_SRC bash
+   cd
+   chmod 700 .ssh/                 # .ssh directory
+   cd .ssh/
+   chmod 600 *                     # private keys and other files
+   chmod 644 *.pub                 # public keys
+   #+END_SRC
+
+* DNS
+** DNS servers
+9.9.9.9
+8.8.8.8
+** Search domains
+duckduckgo.com
+google.com
 
 * Fonts
-Download and install Deja Vu fonts
+Download and install DejaVu font
 
-* Full Disk access
+* Keyboard configuration
+
+* Security and Privacy
+** Accessibility
 1. Terminal
+2. Emacs
+** Full Disk Access
+1. Terminal
+2. Emacs
+** Developer Tools
+1. Terminal
+   #+BEGIN_SRC bash
+   # Enable Developer Tools tab and add Terminal to it
+   sudo spctl developer-mode enable-terminal
+   #+END_SRC
+2. Emacs
+3. gls (once installed)
+4. ispell (once installed)
+5. movemail (once installed)
+6. nix (once installed)
 
-* Developer access (what does this do?)
+* Install XCode Command Line Tools (git and clang)
+1. Install from the terminal (version 1)
+   #+BEGIN_SRC bash
+   clang --version
+   #+END_SRC
+   Follow on-screen prompts to install
+2. Install from the terminal (version 2)
+   #+BEGIN_SRC bash
+   xcode-select --install
+   #+END_SRC
+3. If installation from the terminal fails, manually download the latest version of "Command Line Tools for XCode" from https://developer.apple.com/download/more/
 
-* XCode command line tools (git)
-1. Manually download and install; command line installation fails (also permissions-based?)
-
-* Package Manager (Nix)
+* Install the Nix Package Manager (needs clean up)
+Following https://www.philipp.haussleiter.de/2020/04/fixing-nix-setup-on-macos-catalina/
 1. Create .profile
 2. Create new disk and mount point
-3. Download install, Curl doesn't work (refusal to execute script?)
+3. Download script and then execute install (curl refuses to download and run as a single operation on Catalina)
+4. Rename .profile -> .zshenv
 
-* Catalina performance
+* Install packages with Nix package manager
+1. Emacs
+   1. Install with Nix
+      #+BEGIN_SRC bash
+      nix-env -i emacs-26.3
+      #+END_SRC
+   2. Create symbolic link from application location to Applications folder
+      #+BEGIN_SRC bash
+      sudo su
+      cd /Applications/
+      ln -s /nix/var/nix/profiles/per-user/gilgamesh/profile/Applications/Emacs.app Emacs.app
+      #+END_SRC
+2. Coreutils (required for emacs)
+   1. Check for exact version (e.g. "g"-prefixed)
+      #+BEGIN_SRC bash
+      nix-env -qasP coreutils
+      #+END_SRC
+   2. Install "g"-prefixed version (i.e. "ls" -> "gls")
+      #+BEGIN_SRC bash
+      nix-env -iA nixpkgs.coreutils-prefixed
+      #+END_SRC
+3. Ispell (required for Emacs)
+4. Darcs (required for Emacs interaction with /usr/share/zsh/5.7.1/functions)
+5. Fish (required for Derek's Emacs configuration)
+6. Stow (required for managing dot files)
+7. Imagemagick
+   #+BEGIN_SRC bash
+     nix-env -i ghostscript
+     nix-env -iA nixpkgs.imagemagick7
+   #+END_SRC
 
-* Settings export
+* Install XQuartz
+https://www.xquartz.org
 
-* COMMENT Footer
-;; Local Variables:
-;; eval: (visual-line-mode)
-;; eval: (flyspell-mode)
-;; End:
+* Shell configuration
+Install dot files from https://github.com/devnich/dotfiles (NB: Some of these, such as .zshenv and .nix-channel, may conflict with files you have already created during the setup process. In these cases, merge the important differences into the version in ~/dotfiles prior to running stow).
+
+* Force Office to save locally
+1. Stay signed out of office
+2. Tweak privacy settings: https://docs.microsoft.com/en-us/deployoffice/privacy/mac-privacy-preferences
+
+* Install Python Anaconda distribution
+1. Install Python 3 version
+2. Deactivate Anaconda to use system Python or utilities
+  #+BEGIN_SRC bash
+    # Deactivate Anaconda install
+    conda deactivate
+    which python                    # outputs /usr/bin/python
+    # Reactivate
+    conda activate
+    which python                    # outputs /Users/<user_name>/opt/anaconda3/bin/python
+  #+END_SRC
+3. Update base environment
+  #+BEGIN_SRC bash
+  conda update --all
+  #+END_SRC
+4. Create Python virtual environments
+  #+BEGIN_SRC bash
+    # Create environment with selected libraries
+    conda create -n <env name> google-api-python-client pandas
+    # Show environment
+    conda env list
+    # Switch to environment
+    conda activate <env name>
+    # Install additional software with pip; always do this last
+    pip install search_sampler
+    #  Remove environment
+    conda env remove -n <env name>
+  #+END_SRC
+
+* Install R
+1. Install R from CRAN: https://cran.r-project.org
+2. Use R language manager to install libraries, e.g.
+   #+BEGIN_SRC r
+   install.packages("tidyverse")
+   #+END_SRC
+3. Check Jupyter kernels
+   #+BEGIN_SRC bash
+   jupyter kernelspec list
+   #+END_SRC
+4. If R kernel not listed, install it
+   #+BEGIN_SRC r
+   install.packages('IRkernel')
+   IRkernel::installspec()
+   #+END_SRC
+
+* Restore from CrashPlan
+1. View web console: https://www.crashplan.com/console
+2. Restart CrashPlan service
+   #+BEGIN_SRC bash
+   # Stop Crashplan
+   sudo launchctl unload /Library/LaunchDaemons/com.code42.service.plist
+   # Start Crashplan
+   sudo launchctl load /Library/LaunchDaemons/com.code42.service.plist
+   #+END_SRC
+
+* Install CLAN
+1. Give full disk access to Terminal
+   1. Go to System Preferences -> Security & Privacy -> Full Disk Access
+   2. Check Terminal (or add with + if it doesn't already appear in the list of programs)
+2. Install XCode Command Line Tools
+   1. Open Terminal
+   2. Type "clang --version"
+   3. Follow prompts for installation
+   4. Report mysterious errors so we can learn together
+3. Download Unix CLAN
+4. Move folder to desired install location (I used ~/Code/unix-clan)
+5. Edit installation files in unix-clan/src according to the instructions found in unix-clan/src/0README.TXT
+   1. In unix-clan/src/makefile, uncomment all lines under "for Apple Unix AND FreeBSD >= 3.2"
+   2. In unix-clan/src/common.h, update the "DEPDIR" variable:
+      #define DEPDIR  "<absolute-path-to>/unix-clan/lib"
+      (e.g. "/Users/gilgamesh/Code/unix-clan/lib")
+6. Compile
+   1. Open Terminal and cd into unix-clan/src
+   2. type "make"
+7. Add unix-clan/unix/bin directory to PATH
+   1. Create the ~/.zshrc file if it doesn't already exist
+   2. Add the following line to .zshrc:
+      export PATH="<absolute-path-to>/unix-clan/unix/bin:$PATH"
+   3. Quit and restart Terminal
+8. Test
+   1. cd into unix-clan/examples
+   2. Type "freq sample.cha"
+
+* Compile and serve Github pages locally with Jekyll
+1. Install Jekyll, following https://carpentries.github.io/lesson-example/setup.html#jekyll-setup-for-lesson-development
+   #+BEGIN_SRC bash
+    nix-env -iA nixpkgs.ruby
+    nix-env -iA nixpkgs.libxml2
+    gem install bundler --user-install
+    cd <project_directory>
+    bundle install --path vendor/bundle
+    bundle update
+    #+END_SRC
+2. Ignore vendor files in top-level _config.yml:
+   #+BEGIN_SRC org
+   exclude:
+      - Makefile
+      - bin/
+      - .Rproj.user/
+      - Gemfile
+      - Gemfile.lock
+      - node_modules
+      - vendor/bundle/
+      - vendor/cache/
+      - vendor/gems/
+      - vendor/ruby/
+      - .vendor/bundle/
+      - .vendor/cache/
+      - .vendor/gems/
+      - .vendor/ruby/
+   #+END_SRC
+3. Compile page and serve
+   #+BEGIN_SRC bash
+   make serve
+   #+END_SRC
+
+* TODO Use specific Python and R environments in Jupyter/RStudio
+
+* TODO Emacs Python/R workflow
+** Conda environments and Anaconda mode
+https://github.com/necaris/conda.el
+** R environments
+** graphs, tables, and other output
+
+* TODO sorting by file/process provides stable sort of files but not directories
+
+* TODO Fix Xquartz and imagemagick in Emacs
+https://imagemagick.org/script/display.php
+https://imagemagick.org/script/download.php
+https://www.xquartz.org/FAQs.html
+
+* TODO System-aware themes in Emacs
+
+* TODO zsh configuration
+1. [DONE] Customize colors
+   https://geoff.greer.fm/lscolors/
+2. completions?
+3. completions for nix?
+4. fish-like syntax highlighting and other modifications?
+5. Customize prompt?
+6. oh-my-zsh?
+
+* TODO Nix profile management with delegated update (e.g. NPM, apps, conda, R)
+
+* TODO Settings export with Nix
+
+* DEPRECATED Install R using conda
+   cf. https://community.rstudio.com/t/why-not-r-via-conda/9438/4
+   #+BEGIN_SRC bash
+     # conda install -c r r-base # this breaks
+     conda install r-essentials      # OR
+     conda create -n <env name> r-essentials
+   #+END_SRC
+
+* INFO Catalina performance
+CLOSED: [2020-06-27 Sat 16:22]
+:LOGBOOK:
+- State "INFO"       from "TODO"       [2020-06-27 Sat 16:22] \\
+  Waiting for better information about Catalina interaction with Emacs and its subprocesses.
+:END:
+1. Round-trip for checking scripts - visible on emacs .org file open?
+2. Forbid outgoing connections for syspolicyd to  api.apple-cloudkit.com via pfctl (command line) or Murus (GUI)?
+   #+BEGIN_SRC bash
+   # View outgoing permissions connections
+   sudo log stream --debug --info --predicate "processImagePath contains 'tccd' OR processImagePath contains 'syspolicyd' OR processImagePath Contains[c] 'taskgated' OR processImagePath contains 'trustd' OR eventMessage Contains[c] 'malware' OR senderImagePath Contains[c] 'security' "
+   #+END_SRC
+3. Check that firewall settings don't block Google sync, Box, etc
