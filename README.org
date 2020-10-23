@@ -39,8 +39,6 @@ google.com
 * Fonts
 Download and install DejaVu font
 
-* Keyboard configuration
-
 * Security and Privacy
 ** Accessibility
 1. Terminal
@@ -109,6 +107,20 @@ Following https://www.philipp.haussleiter.de/2020/04/fixing-nix-setup-on-macos-c
      nix-env -i ghostscript
      nix-env -iA nixpkgs.imagemagick7
    #+END_SRC
+8. nano
+9. sox
+
+* Update Nix packages
+1. Update channels
+  #+BEGIN_SRC bash
+  nix-channel --update
+  #+END_SRC
+2. Upgrade packages
+  #+BEGIN_SRC bash
+    nix-env -u --dry-run            # See what packages will be upgraded
+    nix-env -u                      # Run upgrade
+  #+END_SRC
+3. Delete and recreate symbolic links for apps
 
 * Install XQuartz
 https://www.xquartz.org
