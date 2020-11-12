@@ -2,7 +2,7 @@
 #+OPTIONS: tex:t title:t toc:nil
 #+ODT_STYLES_FILE: "/Users/gilgamesh/Google Drive/Templates/styles.xml"
 
-#+TITLE: Configuring Mac OS Catalina for Research Computing
+#+TITLE: Configuring MacOS Catalina for Research Computing
 #+AUTHOR: Derek Devnich
 
 * Login
@@ -24,7 +24,7 @@ Enable and activate stealth mode
    mkdir .ssh
    ssh-keygen -t ed25519 -C "<your email address>"
    #+END_SRC
-3. Set permissions for directory and keys
+3. Set permissions for .ssh directory and keys
    #+BEGIN_SRC bash
    cd
    chmod 700 .ssh/                 # .ssh directory
@@ -39,27 +39,31 @@ Enable and activate stealth mode
    #+END_SRC
 
 * DNS
-Configure in System Preferences > Network > WiFi > Advanced > DNS
+Configure in System Preferences \rightarrow Network \rightarrow WiFi \rightarrow Advanced \rightarrow DNS
 ** DNS Servers
+#+BEGIN_SRC bash
 9.9.9.9
 8.8.8.8
+#+END_SRC
 ** Search Domains
+#+BEGIN_SRC bash
 duckduckgo.com
 google.com
+#+END_SRC
 
 * Fonts
 Download and install DejaVu fonts
 
 * Give some programs permission to access the entire directory structure
-Configure in System Preferences > Security & Privacy
-** Accessibility
+Configure in System Preferences \rightarrow Security & Privacy
+** Accessibility tab
 1. Terminal
 2. Emacs
-** Full Disk Access
+** Full Disk Access tab
 1. Terminal
 2. Emacs
-** Developer Tools
-The "Developer Tools" tab will appear when you run the command to enable developer mode for the terminal (1)
+** Developer Tools tab
+The "Developer Tools" tab will appear when you run the command to enable developer mode for the terminal (step 1 below)
 1. Terminal
    #+BEGIN_SRC bash
    # Enable Developer Tools tab and add Terminal to it
@@ -72,16 +76,17 @@ The "Developer Tools" tab will appear when you run the command to enable develop
 6. nix (once installed)
 
 * Install XCode Command Line Tools (git and clang)
-1. Install from the terminal (version 1)
+You can install Git on your Mac using one of the following methods (we list more than one method because sometimes your permission settings will prevent one of the methods from working. Start at the top of the list and work your way down).
+1. Method 1: Install from the terminal (v1)
    #+BEGIN_SRC bash
    clang --version
    #+END_SRC
    Follow on-screen prompts to install
-2. Install from the terminal (version 2)
+2. Method 2: Install from the terminal (v2)
    #+BEGIN_SRC bash
    xcode-select --install
    #+END_SRC
-3. If installation from the terminal fails, manually download the latest version of "Command Line Tools for XCode" from https://developer.apple.com/download/more/
+3. Method 3: Manually download the latest version of "Command Line Tools for XCode" from https://developer.apple.com/download/more/
 
 * Update XCode Command Line Tools
 1. Search for software updates
@@ -150,7 +155,7 @@ Following https://www.philipp.haussleiter.de/2020/04/fixing-nix-setup-on-macos-c
 https://www.xquartz.org
 
 * Shell configuration
-Clone the dot file repository https://github.com/devnich/dotfiles into ~~/dotfiles~ and follow the installation instructions in the README. Note that some files (e.g., ~.zshenv~, ~.nix-channel~) may conflict with files you have already created during the setup process. If this happens, you should merge the contents of each "live" file into its respective repository version before running the ~stow~ command.
+Clone the dot file repository https://github.com/devnich/dotfiles into your home directory and follow the installation instructions in the README. Note that some files (e.g., ~.zshenv~, ~.nix-channel~) may conflict with files you have already created during the setup process. If this happens, you should merge the contents of each "live" file into its respective repository version before running the ~stow~ command.
 
 * Force Office to save locally
 1. Stay signed out of office
@@ -222,7 +227,7 @@ Clone the dot file repository https://github.com/devnich/dotfiles into ~~/dotfil
 
 * Install CLAN
 1. Give full disk access to Terminal
-   1. Go to System Preferences -> Security & Privacy -> Full Disk Access
+   1. Go to System Preferences \rightarrow Security & Privacy \rightarrow Full Disk Access
    2. Check Terminal (or add with + if it doesn't already appear in the list of programs)
 2. Install XCode Command Line Tools
    1. Open Terminal
