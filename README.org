@@ -14,12 +14,17 @@
    https://www.robertsetiadi.com/disabling-globalprotect-vpn-auto-run-during-mac-start-up/
 
 * Firewall
-1. Enable
-2. Activate stealth mode
+Enable and activate stealth mode
 
 * SSH
-1. Copy .ssh directory from old machine
-2. Set permissions
+1. Copy .ssh directory from previous machine
+2. If you don't have a public/private key pair, generate them
+   #+BEGIN_SRC bash
+   cd
+   mkdir .ssh
+   ssh-keygen -t ed25519 -C "<your email address>"
+   #+END_SRC
+3. Set permissions for directory and keys
    #+BEGIN_SRC bash
    cd
    chmod 700 .ssh/                 # .ssh directory
@@ -27,19 +32,26 @@
    chmod 600 *                     # private keys and other files
    chmod 644 *.pub                 # public keys
    #+END_SRC
+4. If you have more than one key pair, create a configuration file (~.ssh/config~) that lists the resolution order for the keys. The ~ssh~ command will try the keys in order until one succeeds.
+   #+BEGIN_SRC bash
+   IdentityFile ~/.ssh/key_1
+   IdentityFile ~/.ssh/key_2
+   #+END_SRC
 
 * DNS
-** DNS servers
+Configure in System Preferences > Network > WiFi > Advanced > DNS
+** DNS Servers
 9.9.9.9
 8.8.8.8
-** Search domains
+** Search Domains
 duckduckgo.com
 google.com
 
 * Fonts
-Download and install DejaVu font
+Download and install DejaVu fonts
 
-* Security and Privacy
+* Give some programs permission to access the entire directory structure
+Configure in System Preferences > Security & Privacy
 ** Accessibility
 1. Terminal
 2. Emacs
@@ -47,6 +59,7 @@ Download and install DejaVu font
 1. Terminal
 2. Emacs
 ** Developer Tools
+The "Developer Tools" tab will appear when you run the command to enable developer mode for the terminal (1)
 1. Terminal
    #+BEGIN_SRC bash
    # Enable Developer Tools tab and add Terminal to it
@@ -70,12 +83,22 @@ Download and install DejaVu font
    #+END_SRC
 3. If installation from the terminal fails, manually download the latest version of "Command Line Tools for XCode" from https://developer.apple.com/download/more/
 
+* Update XCode Command Line Tools
+1. Search for software updates
+   #+BEGIN_SRC bash
+   softwareupdate --list
+   #+END_SRC
+2. Install using full name
+   #+BEGIN_SRC bash
+   softwareupdate -i "Command Line Tools (macOS High Sierra version 10.13) for Xcode-10.1"
+   #+END_SRC
+
 * Install the Nix Package Manager (needs clean up)
 Following https://www.philipp.haussleiter.de/2020/04/fixing-nix-setup-on-macos-catalina/
-1. Create .profile
-2. Create new disk and mount point
-3. Download script and then execute install (curl refuses to download and run as a single operation on Catalina)
-4. Rename .profile -> .zshenv
+1. Create ~.profile~ in home directory
+2. Create new APFS disk and mount point
+3. Download installation script and execute (curl refuses to download and run as a single operation on Catalina)
+4. Copy contents of ~.profile~ to ~.zshrc~ (or rename ~.profile~ to ~.zshrc~ if it doesn't already exist)
 
 * Install packages with Nix package manager
 1. Emacs
@@ -89,26 +112,27 @@ Following https://www.philipp.haussleiter.de/2020/04/fixing-nix-setup-on-macos-c
       cd /Applications/
       ln -s /nix/var/nix/profiles/per-user/gilgamesh/profile/Applications/Emacs.app Emacs.app
       #+END_SRC
-2. Coreutils (required for emacs)
-   1. Check for exact version (e.g. "g"-prefixed)
+2. coreutils (required for emacs)
+   1. Get complete version information for all of the package variants. We are looking for the "prefixed" version of the GNU/Linux utilities (e.g., the ~ls~ command will be installed as ~gls~). This prevents us from overriding the built-in BSD versions of the commands.
       #+BEGIN_SRC bash
       nix-env -qasP coreutils
       #+END_SRC
-   2. Install "g"-prefixed version (i.e. "ls" -> "gls")
+   2. Install "g"-prefixed version
       #+BEGIN_SRC bash
       nix-env -iA nixpkgs.coreutils-prefixed
       #+END_SRC
-3. Ispell (required for Emacs)
-4. Darcs (required for Emacs interaction with /usr/share/zsh/5.7.1/functions)
-5. Fish (required for Derek's Emacs configuration)
-6. Stow (required for managing dot files)
-7. Imagemagick
+3. ispell (required for Emacs)
+4. darcs (required for Emacs interaction with /usr/share/zsh/5.7.1/functions)
+5. fish (required for Derek's Emacs configuration)
+6. htop
+7. stow (required for managing dot files)
+8. imagemagick
    #+BEGIN_SRC bash
      nix-env -i ghostscript
      nix-env -iA nixpkgs.imagemagick7
    #+END_SRC
-8. nano
-9. sox
+9. nano
+10. sox (optional, for editing sound files)
 
 * Update Nix packages
 1. Update channels
@@ -126,7 +150,7 @@ Following https://www.philipp.haussleiter.de/2020/04/fixing-nix-setup-on-macos-c
 https://www.xquartz.org
 
 * Shell configuration
-Install dot files from https://github.com/devnich/dotfiles (NB: Some of these, such as .zshenv and .nix-channel, may conflict with files you have already created during the setup process. In these cases, merge the important differences into the version in ~/dotfiles prior to running stow).
+Clone the dot file repository https://github.com/devnich/dotfiles into ~~/dotfiles~ and follow the installation instructions in the README. Note that some files (e.g., ~.zshenv~, ~.nix-channel~) may conflict with files you have already created during the setup process. If this happens, you should merge the contents of each "live" file into its respective repository version before running the ~stow~ command.
 
 * Force Office to save locally
 1. Stay signed out of office
@@ -143,11 +167,19 @@ Install dot files from https://github.com/devnich/dotfiles (NB: Some of these, s
     conda activate
     which python                    # outputs /Users/<user_name>/opt/anaconda3/bin/python
   #+END_SRC
-3. Update base environment
+3. Check for updates
+  #+BEGIN_SRC bash
+  conda update --all --dry-run
+  #+END_SRC
+4. Update conda package manager (may also update other packages)
+  #+BEGIN_SRC bash
+  conda update -n base conda
+  #+END_SRC
+5. Update default (base) environment
   #+BEGIN_SRC bash
   conda update --all
   #+END_SRC
-4. Create Python virtual environments
+6. Create Python virtual environments
   #+BEGIN_SRC bash
     # Create environment with selected libraries
     conda create -n <env name> google-api-python-client pandas
@@ -163,15 +195,16 @@ Install dot files from https://github.com/devnich/dotfiles (NB: Some of these, s
 
 * Install R
 1. Install R from CRAN: https://cran.r-project.org
-2. Use R language manager to install libraries, e.g.
+2. Install RStudio IDE
+3. Use R language manager to install libraries, e.g.
    #+BEGIN_SRC r
    install.packages("tidyverse")
    #+END_SRC
-3. Check Jupyter kernels
+4. Check whether R is available as a Jupyter kernel (optional)
    #+BEGIN_SRC bash
    jupyter kernelspec list
    #+END_SRC
-4. If R kernel not listed, install it
+5. If R kernel not listed, install it (optional)
    #+BEGIN_SRC r
    install.packages('IRkernel')
    IRkernel::installspec()
@@ -255,21 +288,18 @@ Install dot files from https://github.com/devnich/dotfiles (NB: Some of these, s
    2. R environments
    3. graphs, tables, and other output
 3. sorting by file/process provides stable sort of files but not directories
-4. Fix Xquartz and imagemagick in Emacs
+4. Fix Xquartz and imagemagick in Emacs (maybe?)
      https://imagemagick.org/script/display.php
      https://imagemagick.org/script/download.php
      https://www.xquartz.org/FAQs.html
-5. System-aware themes in Emacs
-6. zsh configuration
+5. zsh configuration
    1. [DONE] Customize colors
       https://geoff.greer.fm/lscolors/
    2. completions?
    3. completions for nix?
    4. fish-like syntax highlighting and other modifications?
-   5. Customize prompt?
-   6. oh-my-zsh?
-7. Nix profile management with delegated update (e.g. NPM, apps, conda, R)
-8. Settings export with Nix
+6. Nix profile management with delegated update (e.g. NPM, apps, conda, R)
+7. Export Nix settings
 
 * DEPRECATED Install R using conda
    cf. https://community.rstudio.com/t/why-not-r-via-conda/9438/4
