@@ -12,6 +12,11 @@
    #+END_SRC
 2. Disable Global Protect VPN autostart
    https://www.robertsetiadi.com/disabling-globalprotect-vpn-auto-run-during-mac-start-up/
+3. Manually kill and restart Global Protect VPN (via https://joshcurry.co.uk/posts/how-to-quit-globalprotect-mac/)
+   #+BEGIN_SRC bash
+   launchctl unload /Library/LaunchAgents/com.paloaltonetworks.gp.pangp*
+   launchctl load /Library/LaunchAgents/com.paloaltonetworks.gp.pangp*
+   #+END_SRC
 
 * Firewall
 Enable and activate stealth mode
@@ -53,6 +58,9 @@ google.com
 
 * Fonts
 Download and install DejaVu fonts
+
+* Enable Safari show URL on mouseover
+View menu >  show status bar
 
 * Give some programs permission to access the entire directory structure
 Configure in System Preferences \rightarrow Security & Privacy
@@ -316,9 +324,10 @@ Clone the dot file repository https://github.com/devnich/dotfiles into your home
 
 * INFO Catalina performance
 1. Round-trip for checking scripts - visible on emacs .org file open?
-2. Forbid outgoing connections for syspolicyd to  api.apple-cloudkit.com via pfctl (command line) or Murus (GUI)?
+2. Forbid outgoing connections for syspolicyd to api.apple-cloudkit.com via pfctl (command line) or Murus (GUI)?
    #+BEGIN_SRC bash
    # View outgoing permissions connections
    sudo log stream --debug --info --predicate "processImagePath contains 'tccd' OR processImagePath contains 'syspolicyd' OR processImagePath Contains[c] 'taskgated' OR processImagePath contains 'trustd' OR eventMessage Contains[c] 'malware' OR senderImagePath Contains[c] 'security' "
    #+END_SRC
-3. Check that firewall settings don't block Google sync, Box, etc
+3. Forbid outgoing connections from trustd
+4. Check that firewall settings don't block Google sync, Box, etc
