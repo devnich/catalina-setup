@@ -192,10 +192,20 @@ Clone the dot file repository https://github.com/devnich/dotfiles into your home
   #+BEGIN_SRC bash
   conda update --all
   #+END_SRC
-6. Create Python virtual environments
+6. Find new packages
+  #+BEGIN_SRC bash
+  conda search -i/v <package-name>
+  #+END_SRC
+7. Install new packages
+  #+BEGIN_SRC bash
+  conda install <package-name>
+  #+END_SRC
+8. Create Python virtual environments
   #+BEGIN_SRC bash
     # Create environment with selected libraries
     conda create -n <env name> google-api-python-client pandas
+    # Alternatively, create a new environment cloned from a preexisting environment
+    conda create -n <env name> --clone base
     # Show environment
     conda env list
     # Switch to environment
