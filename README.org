@@ -106,12 +106,43 @@ You can install Git on your Mac using one of the following methods (we list more
    softwareupdate -i "Command Line Tools (macOS High Sierra version 10.13) for Xcode-10.1"
    #+END_SRC
 
-* Install the Nix Package Manager (needs clean up)
+* Install the Nix Package Manager
 Following https://www.philipp.haussleiter.de/2020/04/fixing-nix-setup-on-macos-catalina/
-1. Create ~.profile~ in home directory
-2. Create new APFS disk and mount point
-3. Download installation script and execute (curl refuses to download and run as a single operation on Catalina)
-4. Copy contents of ~.profile~ to ~.zshrc~ (or rename ~.profile~ to ~.zshrc~ if it doesn't already exist)
+   #+BEGIN_SRC bash
+   #+END_SRC
+1. Verify that your file system is APFS
+   #+BEGIN_SRC bash
+   diskutil list | grep APFS
+   #+END_SRC
+2. Create a new APFS disk volume called "nix" using Disk Utility
+3. Create a mount point by adding the volume name to /etc/synthetic.conf:
+   #+BEGIN_EXAMPLE
+   nix
+   #+END_EXAMPLE
+4. Reboot. This will create the "/nix" mount point.
+5. Get the disk volume partition for the /nix mount point.
+   #+BEGIN_SRC bash
+   diskutil list | grep APFS | grep nix
+   #+END_SRC
+6. Use the volume partition number to find its UUID
+   #+BEGIN_SRC bash
+   diskutil info /dev/disk1s6 | grep UUID
+   #+END_SRC
+7. Create and edit /etc/fstab, preferably using vifs (note that vifs uses vi keybindings). Be sure to use *your* UUID, not the UUID in the example.
+   #+BEGIN_SRC bash
+   sudo vifs
+   #+END_SRC
+
+   #+BEGIN_EXAMPLE
+   UUID=78012913-F18F-4CB5-9CF0-CFFBB609692C /nix apfs rw
+   #+END_EXAMPLE
+8. Reboot.
+9. Create ~.profile~ in home directory
+11. Download the nix installation script from https://nixos.org/nix/install as "install.sh", then execute:
+   #+BEGIN_SRC bash
+   sh install.sh
+   #+END_SRC
+12. Copy contents of ~.profile~ to ~.zshrc~ (or rename ~.profile~ to ~.zshrc~ if it doesn't already exist)
 
 * Install packages with Nix package manager
 1. Emacs
