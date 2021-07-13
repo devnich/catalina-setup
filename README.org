@@ -22,8 +22,8 @@
 Enable and activate stealth mode
 
 * SSH
-1. Copy .ssh directory from previous machine
-2. If you don't have a public/private key pair, generate them
+1. If you have a ~~/.ssh~ directory on your old machine, copy that directory to your new machine.
+2. Otherwise, create a new ~~/.ssh~ directory and generate a public/private key pair
    #+BEGIN_SRC bash
    cd
    mkdir .ssh
@@ -48,6 +48,8 @@ Configure in System Preferences \rightarrow Network \rightarrow WiFi \rightarrow
 ** DNS Servers
 #+BEGIN_SRC bash
 9.9.9.9
+2620:fe::fe
+2620:fe::9
 8.8.8.8
 #+END_SRC
 ** Search Domains
