@@ -22,8 +22,8 @@
 Enable and activate stealth mode
 
 * SSH
-1. If you have a ~~/.ssh~ directory on your old machine, copy that directory to your new machine.
-2. Otherwise, create a new ~~/.ssh~ directory and generate a public/private key pair
+1. If you have a ~.ssh~ directory in your old machine's home directory, copy that directory to your new machine.
+2. Otherwise, create a new ~.ssh~ directory and generate a public/private key pair
    #+BEGIN_SRC bash
    cd
    mkdir .ssh
