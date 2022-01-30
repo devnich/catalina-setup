@@ -22,25 +22,34 @@
 Enable and activate stealth mode
 
 * SSH
-1. If you have a ~.ssh~ directory in your old machine's home directory, copy that directory to your new machine.
-2. Otherwise, create a new ~.ssh~ directory and generate a public/private key pair
+1. If you are a Windows 10 user, you will need to install Git for Windows: https://gitforwindows.org
+2. If you have a ~.ssh~ directory in your old machine's home directory, copy that directory to your new machine.
+3. Otherwise, create a new ~.ssh~ directory and generate a public/private key pair. On MacOS or Linux, open the Terminal application; on Windows 10, open the Powershell application. Then:
    #+BEGIN_SRC bash
-   cd
+   cd ~/
    mkdir .ssh
    ssh-keygen -t ed25519 -C "<your email address>"
    #+END_SRC
-3. Set permissions for .ssh directory and keys
+   1. You will be prompted to enter a file name for the keys. Press Return to accept the default.
+   2. You we be prompted to enter a passphrase. Type a passphrase and press Return (the Terminal will not display your password while you are typing).
+4. Set permissions for .ssh directory and keys.
+   1. MacOS/Linux:
+      #+BEGIN_SRC bash
+      cd ~/
+      chmod 700 .ssh/                 # .ssh directory
+      cd .ssh/
+      chmod 600 *                     # private keys and other files
+      chmod 644 *.pub                 # public keys
+      #+END_SRC
+   2. Windows 10:
+      TO DO
+      #+BEGIN_SRC shell
+      #+END_SRC
+5. If you have more than one key pair, create a configuration file (~.ssh/config~) that lists the resolution order for the keys. The ~ssh~ command will try the keys in order until one succeeds. The contents of ~config~ should follow this template:
    #+BEGIN_SRC bash
-   cd
-   chmod 700 .ssh/                 # .ssh directory
-   cd .ssh/
-   chmod 600 *                     # private keys and other files
-   chmod 644 *.pub                 # public keys
-   #+END_SRC
-4. If you have more than one key pair, create a configuration file (~.ssh/config~) that lists the resolution order for the keys. The ~ssh~ command will try the keys in order until one succeeds.
-   #+BEGIN_SRC bash
-   IdentityFile ~/.ssh/key_1
-   IdentityFile ~/.ssh/key_2
+   IdentityFile ~/.ssh/<key_file_1>
+   IdentityFile ~/.ssh/<key_file_2>
+   # et cetera
    #+END_SRC
 
 * DNS
@@ -204,6 +213,7 @@ Clone the dot file repository https://github.com/devnich/dotfiles into your home
 
 * Install Python Anaconda distribution
 1. Install Python 3 version
+   After installation, ~which python~ should report that Python is installed in ~/Users/<your user name>/opt/anaconda3/bin/python~. If it reports the system Python location, copy the relevant lines from ~.bash_profile~ to ~.zshrc~.
 2. Deactivate Anaconda to use system Python or utilities
   #+BEGIN_SRC bash
     # Deactivate Anaconda install
@@ -265,6 +275,17 @@ Clone the dot file repository https://github.com/devnich/dotfiles into your home
    install.packages('IRkernel')
    IRkernel::installspec()
    #+END_SRC
+6. If installing TinyTeX (Bookdown dependency), change owner of "/usr/local/bin"
+   #+BEGIN_SRC bash
+   sudo chown -R `whoami`:admin /usr/local/bin
+   #+END_SRC
+
+** Build Bookdown book (e.g., "Advanced R")
+c.f. https://bookdown.org/yihui/bookdown/build-the-book.html
+#+BEGIN_SRC R
+bookdown::render_book() # Test for dependencies via repeated failure
+bookdown::render_book('index.Rmd', 'bookdown::pdf_book')
+#+END_SRC
 
 * Restore from CrashPlan
 1. View web console: https://www.crashplan.com/console
