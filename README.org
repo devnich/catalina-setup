@@ -200,6 +200,15 @@ Following https://www.philipp.haussleiter.de/2020/04/fixing-nix-setup-on-macos-c
     nix-env -u                      # Run upgrade
   #+END_SRC
 3. Delete and recreate symbolic links for apps
+4. Remove older software versions from cache
+  #+BEGIN_SRC bash
+  nix-env --list-generations
+  nix-collect-garbage --delete-older-than 60d
+  #+END_SRC
+5. Force an update of the package manager
+  #+BEGIN_SRC bash
+  nix upgrade-nix
+  #+END_SRC
 
 * Install XQuartz
 https://www.xquartz.org
@@ -245,19 +254,26 @@ Clone the dot file repository https://github.com/devnich/dotfiles into your home
   #+END_SRC
 8. Create Python virtual environments
   #+BEGIN_SRC bash
-    # Create environment with selected libraries
-    conda create -n <env name> google-api-python-client pandas
-    # Alternatively, create a new environment cloned from a preexisting environment
-    conda create -n <env name> --clone base
-    # Show environment
-    conda env list
-    # Switch to environment
-    conda activate <env name>
-    # Install additional software with pip; always do this last
-    pip install search_sampler
-    #  Remove environment
-    conda env remove -n <env name>
+  # Create environment with selected libraries
+  conda create -n <env name> google-api-python-client pandas
+  # Alternatively, create a new environment cloned from a preexisting environment
+  conda create -n <env name> --clone base
+  # Alternatively, create a new environment following a YAML spec
+  conda env create -f <env file name>.yml
+  # Show environment
+  conda env list
+  # Switch to environment
+  conda activate <env name>
+  # Export current environment to YAML
+  conda env export > <env file name>.yml
+  # Install additional software with pip; always do this last
+  pip install search_sampler
+  #  Remove environment
+  conda env remove -n <env name>
   #+END_SRC
+9. References
+   1. https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html
+   2. https://docs.python.org/3/tutorial/modules.html
 
 * Install R
 1. Install R from CRAN: https://cran.r-project.org
