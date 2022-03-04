@@ -42,9 +42,8 @@ Enable and activate stealth mode
       chmod 644 *.pub                 # public keys
       #+END_SRC
    2. Windows 10:
-      TO DO
-      #+BEGIN_SRC shell
-      #+END_SRC
+      The best approach on Windows is probably to use the Github Credential Manager: https://github.com/GitCredentialManager . It's difficult to find clear guidance on how to set file permissions for .ssh/ and its contents.
+
 5. If you have more than one key pair, create a configuration file (~.ssh/config~) that lists the resolution order for the keys. The ~ssh~ command will try the keys in order until one succeeds. The contents of ~config~ should follow this template:
    #+BEGIN_SRC bash
    IdentityFile ~/.ssh/<key_file_1>
