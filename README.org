@@ -219,7 +219,7 @@ Clone the dot file repository https://github.com/devnich/dotfiles into your home
 1. Stay signed out of office
 2. Tweak privacy settings: https://docs.microsoft.com/en-us/deployoffice/privacy/mac-privacy-preferences
 
-* Install Python Anaconda distribution
+* Install Python Anaconda distribution (single user)
 1. Install Python 3 version
    After installation, ~which python~ should report that Python is installed in ~/Users/<your user name>/opt/anaconda3/bin/python~. If it reports the system Python location, copy the relevant lines from ~.bash_profile~ to ~.zshrc~.
 2. Deactivate Anaconda to use system Python or utilities
@@ -274,19 +274,31 @@ Clone the dot file repository https://github.com/devnich/dotfiles into your home
    1. https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html
    2. https://docs.python.org/3/tutorial/modules.html
 
+* Install Python Anaconda distribution (multi-user)
+1. If installing Anaconda on a lab machine, choose the multi-user installation
+2. In a multi-user installation, you cannot start Jupyter Lab from the Anaconda Navigator launcher. There are two work-arounds:
+   1. Launch the Anaconda Powershell prompt and run
+      #+BEGIN_SRC bash
+      python -m jupyterlab
+      #+END_SRC
+   2. Launch Jupyter Notebook. Edit the notebook URL, replacing ```tree``` with ```lab```, and reload.
+
 * Install R
 1. Install R from CRAN: https://cran.r-project.org
 2. Install RStudio IDE
-3. Use R language manager to install libraries, e.g.
-   #+BEGIN_SRC r
+3. Use R language manager to install useful libraries
+   #+BEGIN_SRC R
    install.packages("tidyverse")
+   install.packages("rmarkdown")
+   install.packages("bookdown")
+   install.packages("renv")
    #+END_SRC
 4. Check whether R is available as a Jupyter kernel (optional)
    #+BEGIN_SRC bash
    jupyter kernelspec list
    #+END_SRC
 5. If R kernel not listed, install it (optional)
-   #+BEGIN_SRC r
+   #+BEGIN_SRC R
    install.packages('IRkernel')
    IRkernel::installspec()
    #+END_SRC
@@ -294,7 +306,6 @@ Clone the dot file repository https://github.com/devnich/dotfiles into your home
    #+BEGIN_SRC bash
    sudo chown -R `whoami`:admin /usr/local/bin
    #+END_SRC
-
 ** Build Bookdown book (e.g., "Advanced R")
 c.f. https://bookdown.org/yihui/bookdown/build-the-book.html
 #+BEGIN_SRC R
