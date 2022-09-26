@@ -1,6 +1,5 @@
-#+STARTUP: showall indent
-#+OPTIONS: tex:t title:t toc:nil
-#+ODT_STYLES_FILE: "/Users/gilgamesh/Google Drive/Templates/styles.xml"
+#+STARTUP: fold indent
+#+OPTIONS: tex:t toc:2 H:6 ^:{}
 
 #+TITLE: Configuring MacOS Catalina for Research Computing
 #+AUTHOR: Derek Devnich
@@ -88,7 +87,7 @@ The "Developer Tools" tab will appear when you run the command to enable develop
    sudo spctl developer-mode enable-terminal
    #+END_SRC
 2. Emacs
-3. gls (once installed)
+3. gls (once installed). Note that this may be superseded by Coreutils ls
 4. ispell (once installed)
 5. movemail (once installed)
 6. nix (once installed)
@@ -167,6 +166,7 @@ Following https://www.philipp.haussleiter.de/2020/04/fixing-nix-setup-on-macos-c
       ln -s /nix/var/nix/profiles/per-user/gilgamesh/profile/Applications/Emacs.app Emacs.app
       #+END_SRC
 2. coreutils (required for emacs)
+   NB: These instructions may be deprecated; it looks like the easiest way to get Emacs working is to use the *un-prefixed* version of coreutils, thereby overwriting BSD ~ls~ with Coreutils ~ls~
    1. Get complete version information for all of the package variants. We are looking for the "prefixed" version of the GNU/Linux utilities (e.g., the ~ls~ command will be installed as ~gls~). This prevents us from overriding the built-in BSD versions of the commands.
       #+BEGIN_SRC bash
       nix-env -qasP coreutils
@@ -182,29 +182,54 @@ Following https://www.philipp.haussleiter.de/2020/04/fixing-nix-setup-on-macos-c
 7. stow (required for managing dot files)
 8. imagemagick
    #+BEGIN_SRC bash
-     nix-env -i ghostscript
-     nix-env -iA nixpkgs.imagemagick7
+   nix-env -i ghostscript
+   nix-env -iA nixpkgs.imagemagick7
    #+END_SRC
 9. nano
 10. sox (optional, for editing sound files)
+11. man-db (caches man pages for faster loading in Emacs)
+    1. Install man-db
+      #+BEGIN_SRC bash
+      nix-env -i man-db
+      #+END_SRC
+
+    2. Create /var/cache/man directory and set owner to logged in user
+      #+BEGIN_SRC bash
+      cd /var/
+      sudo mkdir cache/man
+      sudo chown -R <user>:<group> cache/
+      #+END_SRC
+
+    3. Create database
+       #+BEGIN_SRC bash
+       sudo mandb
+
+       # If the database becomes corrupt, recreate it:
+       sudo mandb -c
+       #+END_SRC
 
 * Update Nix packages
-1. Update channels
+1. Show installed packages
+   This works for imperatively installed packages (installed with `nix-env -i`), but not for profiles.y
+   #+BEGIN_SRC bash
+   nix-env -q
+   #+END_SRC
+2. Update channels
   #+BEGIN_SRC bash
   nix-channel --update
   #+END_SRC
-2. Upgrade packages
+3. Upgrade packages
   #+BEGIN_SRC bash
     nix-env -u --dry-run            # See what packages will be upgraded
     nix-env -u                      # Run upgrade
   #+END_SRC
-3. Delete and recreate symbolic links for apps
-4. Remove older software versions from cache
+4. Delete and recreate symbolic links for apps
+5. Remove older software versions from cache
   #+BEGIN_SRC bash
   nix-env --list-generations
   nix-collect-garbage --delete-older-than 60d
   #+END_SRC
-5. Force an update of the package manager
+6. Force an update of the package manager
   #+BEGIN_SRC bash
   nix upgrade-nix
   #+END_SRC
@@ -292,6 +317,7 @@ Clone the dot file repository https://github.com/devnich/dotfiles into your home
    install.packages("rmarkdown")
    install.packages("bookdown")
    install.packages("renv")
+   install.packages("lintr")
    #+END_SRC
 4. Check whether R is available as a Jupyter kernel (optional)
    #+BEGIN_SRC bash
