@@ -71,6 +71,16 @@ Download and install DejaVu fonts
 * Enable Safari show URL on mouseover
 View menu >  show status bar
 
+* Minimize input lag
+1. Settings > Keyboard: Key Repeat = Fast
+2. Settings > Keyboard: Delay Until Repeat = Short
+3. Settings > General: Disable iCloud handoff
+4. Disable Bluetooth (or unplug all USB devices, depending on input source)
+5. Disable accents pop-up menu
+   #+BEGIN_SRC bash
+   defaults write -g ApplePressAndHoldEnabled -bool false
+   #+END_SRC
+
 * Give some programs permission to access the entire directory structure
 Configure in System Preferences \rightarrow Security & Privacy
 ** Accessibility tab
@@ -210,7 +220,7 @@ Following https://www.philipp.haussleiter.de/2020/04/fixing-nix-setup-on-macos-c
 
 * Update Nix packages
 1. Show installed packages
-   This works for imperatively installed packages (installed with `nix-env -i`), but not for profiles.y
+   This works for imperatively installed packages (installed with `nix-env -i`), but not for profiles.
    #+BEGIN_SRC bash
    nix-env -q
    #+END_SRC
@@ -339,6 +349,22 @@ bookdown::render_book() # Test for dependencies via repeated failure
 bookdown::render_book('index.Rmd', 'bookdown::pdf_book')
 #+END_SRC
 
+*  Install Julia
+1. Install binary
+   https://julialang.org/downloads/
+
+2. Add Julia kernel to Jupyter Lab
+   #+BEGIN_SRC R
+   using Pkg
+   Pkg.add("IJulia")
+   #+END_SRC
+
+3. Make Julia available in path
+   #+BEGIN_SRC bash
+   # Remove original /usr/local/bin/julia symlink if it exists
+   ln -s /Applications/Julia-1.8.app/Contents/Resources/julia/bin/julia /usr/local/bin/julia
+   #+END_SRC
+
 * Restore from CrashPlan
 1. View web console: https://www.crashplan.com/console
 2. Restart CrashPlan service
@@ -378,39 +404,39 @@ bookdown::render_book('index.Rmd', 'bookdown::pdf_book')
    2. Type "freq sample.cha"
 
 * Compile and serve Github pages locally with Jekyll
-1. Install Jekyll, following https://carpentries.github.io/lesson-example/setup.html#jekyll-setup-for-lesson-development
+** Documentation
+1. https://jekyllrb.com
+
+** Install
+1. Install Jekyll and dependencies
    #+BEGIN_SRC bash
-    nix-env -iA nixpkgs.ruby
-    nix-env -iA nixpkgs.libxml2
-    gem install bundler --user-install
-    cd <project_directory>
-    bundle install --path vendor/bundle
-    bundle update
-    #+END_SRC
-2. Ignore vendor files in top-level _config.yml:
-   #+BEGIN_SRC org
-   exclude:
-      - Makefile
-      - bin/
-      - .Rproj.user/
-      - Gemfile
-      - Gemfile.lock
-      - node_modules
-      - vendor/bundle/
-      - vendor/cache/
-      - vendor/gems/
-      - vendor/ruby/
-      - .vendor/bundle/
-      - .vendor/cache/
-      - .vendor/gems/
-      - .vendor/ruby/
-   #+END_SRC
-3. Compile page and serve
-   #+BEGIN_SRC bash
-   make serve
+   gem install bundler
+   gem install jekyll
+   gem install jekyll-sitemap
+   gem install jekyll-seo-tag
    #+END_SRC
 
-* TO DO
+2. Update .bashrc and/or .zshrc
+   #+BEGIN_SRC bash
+   # Add Ruby Gems to path
+   if which ruby >/dev/null && which gem >/dev/null; then
+       PATH="$(ruby -r rubygems -e 'puts Gem.user_dir')/bin:$PATH"
+   fi
+   #+END_SRC
+
+3. Serve web page from site directory
+   #+BEGIN_SRC bash
+   jekyll serve
+   #+END_SRC
+
+** Project structure
+1. pages are composed of layouts and includes
+2. data from spreadsheet goes in data
+3. liquid is part of jekyll build process in github
+4. liquid statements can iterate through YAML files as if they are complex data structures
+5. content and dates pulled from workshops.yml
+
+* COMMENT To Do
 1. Use specific Python and R environments in Jupyter/RStudio
 2. Emacs Python/R workflow
    1. Conda environments and Anaconda mode: https://github.com/necaris/conda.el
@@ -430,7 +456,7 @@ bookdown::render_book('index.Rmd', 'bookdown::pdf_book')
 6. Nix profile management with delegated update (e.g. NPM, apps, conda, R)
 7. Export Nix settings
 
-* DEPRECATED Install R using conda
+* COMMENT DEPRECATED Install R using conda
    cf. https://community.rstudio.com/t/why-not-r-via-conda/9438/4
    #+BEGIN_SRC bash
      # conda install -c r r-base # this breaks
@@ -438,7 +464,7 @@ bookdown::render_book('index.Rmd', 'bookdown::pdf_book')
      conda create -n <env name> r-essentials
    #+END_SRC
 
-* INFO Catalina performance
+* COMMENT Catalina performance
 1. Round-trip for checking scripts - visible on emacs .org file open?
 2. Forbid outgoing connections for syspolicyd to api.apple-cloudkit.com via pfctl (command line) or Murus (GUI)?
    #+BEGIN_SRC bash
