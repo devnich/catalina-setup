@@ -21,9 +21,9 @@
 Enable and activate stealth mode
 
 * SSH
-1. If you are a Windows 10 user, you will need to install Git for Windows: https://gitforwindows.org
-2. If you have a ~.ssh~ directory in your old machine's home directory, copy that directory to your new machine.
-3. Otherwise, create a new ~.ssh~ directory and generate a public/private key pair. On MacOS or Linux, open the Terminal application; on Windows 10, open the Powershell application. Then:
+** MacOS/Linux
+1. If you have a ~.ssh~ directory in your old machine's home directory, copy the contents of that directory to your new machine using Magic Wormhole (this will require a Linux package manager; see Nix section below)
+2. Otherwise, create a new ~.ssh~ directory and generate a public/private key pair. On MacOS or Linux, open the Terminal application; on Windows 10, open the Powershell application. Then:
    #+BEGIN_SRC bash
    cd ~/
    mkdir .ssh
@@ -31,8 +31,7 @@ Enable and activate stealth mode
    #+END_SRC
    1. You will be prompted to enter a file name for the keys. Press Return to accept the default.
    2. You we be prompted to enter a passphrase. Type a passphrase and press Return (the Terminal will not display your password while you are typing).
-4. Set permissions for .ssh directory and keys.
-   1. MacOS/Linux:
+3. Set permissions for .ssh directory and keys.
       #+BEGIN_SRC bash
       cd ~/
       chmod 700 .ssh/                 # .ssh directory
@@ -40,15 +39,14 @@ Enable and activate stealth mode
       chmod 600 *                     # private keys and other files
       chmod 644 *.pub                 # public keys
       #+END_SRC
-   2. Windows 10:
-      The best approach on Windows is probably to use the Github Credential Manager: https://github.com/GitCredentialManager . It's difficult to find clear guidance on how to set file permissions for .ssh/ and its contents.
-
-5. If you have more than one key pair, create a configuration file (~.ssh/config~) that lists the resolution order for the keys. The ~ssh~ command will try the keys in order until one succeeds. The contents of ~config~ should follow this template:
+4. If you have more than one key pair, create a configuration file (~.ssh/config~) that lists the resolution order for the keys. The ~ssh~ command will try the keys in order until one succeeds. The contents of ~config~ should follow this template:
    #+BEGIN_SRC bash
    IdentityFile ~/.ssh/<key_file_1>
    IdentityFile ~/.ssh/<key_file_2>
    # et cetera
    #+END_SRC
+** Windows 10/11:
+   The best approach on Windows is probably to use the Github Credential Manager: https://github.com/GitCredentialManager . It's difficult to find clear guidance on how to set file permissions for .ssh/ and its contents.
 
 * DNS
 Configure in System Preferences \rightarrow Network \rightarrow WiFi \rightarrow Advanced \rightarrow DNS
@@ -82,7 +80,7 @@ View menu >  show status bar
    #+END_SRC
 
 * Give some programs permission to access the entire directory structure
-Configure in System Preferences \rightarrow Security & Privacy
+Configure in System Preferences \rightarrow Privacy & Security
 ** Accessibility tab
 1. Terminal
 2. Emacs
@@ -101,6 +99,28 @@ The "Developer Tools" tab will appear when you run the command to enable develop
 4. ispell (once installed)
 5. movemail (once installed)
 6. nix (once installed)
+
+* Time Machine settings
+** Exclude some directories from Time Machine
+1. Nix disk partition
+2. ~/Library/CloudStorage
+3. ~/Google Drive mirrored directory name
+
+** Delete Time Machine backups
+1. List backups
+   #+BEGIN_SRC bash
+   tmutil listbackups
+   #+END_SRC
+
+2. Delete selected backup
+   #+BEGIN_SRC bash
+   # Delete /Volumes/LaCie/Backups.backupdb/Hermes/2023-03-13-101503
+   sudo tmutil delete -d /Volumes/LaCie -t 2023-03-13-101503
+   #+END_SRC
+3. References
+   - https://derflounder.wordpress.com/2022/07/01/removing-unwanted-time-machine-backups-from-apfs-formatted-time-machine-backup-drives-on-macos-monterey/
+
+   - https://appleinsider.com/articles/21/06/26/how-to-delete-time-machine-local-snapshots-in-macos
 
 * Install XCode Command Line Tools (git and clang)
 You can install Git on your Mac using one of the following methods (we list more than one method because sometimes your permission settings will prevent one of the methods from working. Start at the top of the list and work your way down).
@@ -175,29 +195,37 @@ Following https://www.philipp.haussleiter.de/2020/04/fixing-nix-setup-on-macos-c
       cd /Applications/
       ln -s /nix/var/nix/profiles/per-user/gilgamesh/profile/Applications/Emacs.app Emacs.app
       #+END_SRC
-2. coreutils (required for emacs)
-   NB: These instructions may be deprecated; it looks like the easiest way to get Emacs working is to use the *un-prefixed* version of coreutils, thereby overwriting BSD ~ls~ with Coreutils ~ls~
-   1. Get complete version information for all of the package variants. We are looking for the "prefixed" version of the GNU/Linux utilities (e.g., the ~ls~ command will be installed as ~gls~). This prevents us from overriding the built-in BSD versions of the commands.
+2. coreutils (required for Emacs)
+   These instructions use the *un-prefixed* version of coreutils, thereby overwriting BSD utilities such as ~ls~ with the Linux coreutils for the normal user. The root user is unaffected and will continue to use the BSD versions
+   1. Get complete version information for all of the package variants. We are looking for the un-prefixed version of the GNU/Linux utilities (e.g., the ~ls~ command will be installed as ~ls~, not ~gls~).
       #+BEGIN_SRC bash
       nix-env -qasP coreutils
       #+END_SRC
-   2. Install "g"-prefixed version
+   2. Install un-prefixed version
       #+BEGIN_SRC bash
-      nix-env -iA nixpkgs.coreutils-prefixed
+      nix-env -iA nixpkgs.coreutils
       #+END_SRC
-3. ispell (required for Emacs)
-4. darcs (required for Emacs interaction with /usr/share/zsh/5.7.1/functions)
+3. age
+4. darcs (required for Emacs interaction with /usr/share/zsh/<version>/functions)
 5. fish (required for Derek's Emacs configuration)
 6. htop
-7. stow (required for managing dot files)
-8. imagemagick
+7. imagemagick
    #+BEGIN_SRC bash
    nix-env -i ghostscript
    nix-env -iA nixpkgs.imagemagick7
    #+END_SRC
-9. nano
-10. sox (optional, for editing sound files)
-11. man-db (caches man pages for faster loading in Emacs)
+8. ispell (required for Emacs)
+9. magic-wormhole
+10. nano
+11. nodejs
+12. pandoc
+13. ripgrep
+14. ruby
+15. ruff (optional, syntax checking in Python)
+16. stow (required for managing dot files)
+17. tree
+18. wget
+19. man-db (caches man pages for faster loading in Emacs)
     1. Install man-db
       #+BEGIN_SRC bash
       nix-env -i man-db
@@ -222,7 +250,11 @@ Following https://www.philipp.haussleiter.de/2020/04/fixing-nix-setup-on-macos-c
 1. Show installed packages
    This works for imperatively installed packages (installed with `nix-env -i`), but not for profiles.
    #+BEGIN_SRC bash
+   # Show brief listing
    nix-env -q
+
+   # Show complete installation profile
+   nix-env -q --json --meta
    #+END_SRC
 2. Update channels
   #+BEGIN_SRC bash
@@ -237,15 +269,18 @@ Following https://www.philipp.haussleiter.de/2020/04/fixing-nix-setup-on-macos-c
 5. Remove older software versions from cache
   #+BEGIN_SRC bash
   nix-env --list-generations
-  nix-collect-garbage --delete-older-than 60d
+
+  # Remove all but last 3 generations
+  nix-env --delete-generations +3
+  nix-collect-garbage
+
+  # Optionally, delete and collect garbage in one pass
+  #nix-collect-garbage --delete-older-than 60d
   #+END_SRC
 6. Force an update of the package manager
   #+BEGIN_SRC bash
   nix upgrade-nix
   #+END_SRC
-
-* Install XQuartz
-https://www.xquartz.org
 
 * Shell configuration
 Clone the dot file repository https://github.com/devnich/dotfiles into your home directory and follow the installation instructions in the README. Note that some files (e.g., ~.zshenv~, ~.nix-channel~) may conflict with files you have already created during the setup process. If this happens, you should merge the contents of each "live" file into its respective repository version before running the ~stow~ command.
@@ -272,7 +307,8 @@ Clone the dot file repository https://github.com/devnich/dotfiles into your home
   #+END_SRC
 4. Update conda package manager (may also update other packages)
   #+BEGIN_SRC bash
-  conda update -n base conda
+  # conda update -n base conda
+  conda update -n base -c defaults conda
   #+END_SRC
 5. Update default (base) environment
   #+BEGIN_SRC bash
@@ -349,7 +385,10 @@ bookdown::render_book() # Test for dependencies via repeated failure
 bookdown::render_book('index.Rmd', 'bookdown::pdf_book')
 #+END_SRC
 
-*  Install Julia
+* Install XQuartz
+https://www.xquartz.org
+
+* Install Julia
 1. Install binary
    https://julialang.org/downloads/
 
@@ -363,6 +402,12 @@ bookdown::render_book('index.Rmd', 'bookdown::pdf_book')
    #+BEGIN_SRC bash
    # Remove original /usr/local/bin/julia symlink if it exists
    ln -s /Applications/Julia-1.8.app/Contents/Resources/julia/bin/julia /usr/local/bin/julia
+   #+END_SRC
+
+4. Remove old kernel version from Jupyter Lab
+   #+BEGIN_SRC bash
+   jupyter kernelspec list
+   jupyter kernelspec uninstall <kernel-name>
    #+END_SRC
 
 * Restore from CrashPlan
