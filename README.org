@@ -281,6 +281,10 @@ Following https://www.philipp.haussleiter.de/2020/04/fixing-nix-setup-on-macos-c
   #+BEGIN_SRC bash
   nix upgrade-nix
   #+END_SRC
+7. Remove package
+   #+BEGIN_SRC bash
+   nix-env -e <package>
+   #+END_SRC
 
 * Shell configuration
 Clone the dot file repository https://github.com/devnich/dotfiles into your home directory and follow the installation instructions in the README. Note that some files (e.g., ~.zshenv~, ~.nix-channel~) may conflict with files you have already created during the setup process. If this happens, you should merge the contents of each "live" file into its respective repository version before running the ~stow~ command.
