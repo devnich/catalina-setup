@@ -1,10 +1,11 @@
 #+STARTUP: fold indent
 #+OPTIONS: tex:t toc:2 H:6 ^:{}
 
-#+TITLE: Configuring MacOS Catalina for Research Computing
+#+TITLE: Configuring MacOS for Research Computing
 #+AUTHOR: Derek Devnich
 
-* Login
+* Security
+** Login
 1. Remove password quality restrictions
    #+BEGIN_SRC bash
    pwpolicy -clearaccountpolicies
@@ -17,11 +18,10 @@
    launchctl load /Library/LaunchAgents/com.paloaltonetworks.gp.pangp*
    #+END_SRC
 
-* Firewall
+** Firewall
 Enable and activate stealth mode
 
-* SSH
-** MacOS/Linux
+** SSH
 1. If you have a ~.ssh~ directory in your old machine's home directory, copy the contents of that directory to your new machine using Magic Wormhole (this will require a Linux package manager; see Nix section below)
 2. Otherwise, create a new ~.ssh~ directory and generate a public/private key pair. On MacOS or Linux, open the Terminal application; on Windows 10, open the Powershell application. Then:
    #+BEGIN_SRC bash
@@ -45,60 +45,75 @@ Enable and activate stealth mode
    IdentityFile ~/.ssh/<key_file_2>
    # et cetera
    #+END_SRC
-** Windows 10/11:
+
+*** Windows 10/11:
    The best approach on Windows is probably to use the Github Credential Manager: https://github.com/GitCredentialManager . It's difficult to find clear guidance on how to set file permissions for .ssh/ and its contents.
 
-* DNS
+** DNS
 Configure in System Preferences \rightarrow Network \rightarrow WiFi \rightarrow Advanced \rightarrow DNS
-** DNS Servers
+*** DNS Servers
 #+BEGIN_SRC bash
 9.9.9.9
 2620:fe::fe
 2620:fe::9
 8.8.8.8
 #+END_SRC
-** Search Domains
+
+*** Search Domains
 #+BEGIN_SRC bash
 duckduckgo.com
 google.com
 #+END_SRC
 
-* Fonts
+** Give some programs permission to access the entire directory structure
+Configure in System Preferences \rightarrow Privacy & Security
+1. Accessibility tab
+   1. Terminal
+   2. Emacs
+2. Full Disk Access tab
+   1. Terminal
+   2. Emacs
+3. Developer Tools tab
+   The "Developer Tools" tab will appear when you run the command to enable developer mode for the terminal (step 1 below)
+   1. Terminal
+      #+BEGIN_SRC bash
+      # Enable Developer Tools tab and add Terminal to it
+      sudo spctl developer-mode enable-terminal
+      #+END_SRC
+   2. Emacs
+   3. Coreutils version of ls (once installed)
+   4. ispell (once installed)
+   5. movemail (once installed)
+   6. nix (once installed)
+
+* Ergonomics
+** Fonts
 Download and install DejaVu fonts
 
-* Enable Safari show URL on mouseover
-View menu >  show status bar
-
-* Minimize input lag
-1. Settings > Keyboard: Key Repeat = Fast
-2. Settings > Keyboard: Delay Until Repeat = Short
-3. Settings > General: Disable iCloud handoff
+** Minimize input lag
+1. Settings \rightarrow Keyboard: Key Repeat = Fast
+2. Settings \rightarrow Keyboard: Delay Until Repeat = Short
+3. Settings \rightarrow General: Disable iCloud handoff
 4. Disable Bluetooth (or unplug all USB devices, depending on input source)
 5. Disable accents pop-up menu
    #+BEGIN_SRC bash
    defaults write -g ApplePressAndHoldEnabled -bool false
    #+END_SRC
 
-* Give some programs permission to access the entire directory structure
-Configure in System Preferences \rightarrow Privacy & Security
-** Accessibility tab
-1. Terminal
-2. Emacs
-** Full Disk Access tab
-1. Terminal
-2. Emacs
-** Developer Tools tab
-The "Developer Tools" tab will appear when you run the command to enable developer mode for the terminal (step 1 below)
-1. Terminal
-   #+BEGIN_SRC bash
-   # Enable Developer Tools tab and add Terminal to it
-   sudo spctl developer-mode enable-terminal
-   #+END_SRC
-2. Emacs
-3. gls (once installed). Note that this may be superseded by Coreutils ls
-4. ispell (once installed)
-5. movemail (once installed)
-6. nix (once installed)
+* Desktop applications
+** Safari
+1. Display URL on mouseover
+   View menu \rightarrow  Show status bar
+2. Install extensions
+   1. 1Password
+   2. AdGuard
+   3. Box Tools
+   4. Pinboard Tools
+   5. Zotero Connector
+
+** Force Office to save locally
+1. Stay signed out of office
+2. Tweak privacy settings: https://docs.microsoft.com/en-us/deployoffice/privacy/mac-privacy-preferences
 
 * Time Machine settings
 ** Exclude some directories from Time Machine
@@ -124,18 +139,22 @@ The "Developer Tools" tab will appear when you run the command to enable develop
 
 * Install XCode Command Line Tools (git and clang)
 You can install Git on your Mac using one of the following methods (we list more than one method because sometimes your permission settings will prevent one of the methods from working. Start at the top of the list and work your way down).
-1. Method 1: Install from the terminal (v1)
-   #+BEGIN_SRC bash
-   clang --version
-   #+END_SRC
-   Follow on-screen prompts to install
-2. Method 2: Install from the terminal (v2)
+1. Method 1: Install from the terminal
    #+BEGIN_SRC bash
    xcode-select --install
+
+   # Follow on-screen prompts to install
+   #+END_SRC
+2. Method 2: Install from the terminal
+   #+BEGIN_SRC bash
+   clang --version
+
+   # Follow on-screen prompts to install
    #+END_SRC
 3. Method 3: Manually download the latest version of "Command Line Tools for XCode" from https://developer.apple.com/download/more/
 
-* Update XCode Command Line Tools
+** Update XCode Command Line Tools
+This shouldn't be necessary most of the time; the normal MacOS update process should also offer updates to the command line tools when they are available.
 1. Search for software updates
    #+BEGIN_SRC bash
    softwareupdate --list
@@ -147,8 +166,6 @@ You can install Git on your Mac using one of the following methods (we list more
 
 * Install the Nix Package Manager
 Following https://www.philipp.haussleiter.de/2020/04/fixing-nix-setup-on-macos-catalina/
-   #+BEGIN_SRC bash
-   #+END_SRC
 1. Verify that your file system is APFS
    #+BEGIN_SRC bash
    diskutil list | grep APFS
@@ -176,18 +193,162 @@ Following https://www.philipp.haussleiter.de/2020/04/fixing-nix-setup-on-macos-c
    UUID=78012913-F18F-4CB5-9CF0-CFFBB609692C /nix apfs rw
    #+END_EXAMPLE
 8. Reboot.
-9. Create ~.profile~ in home directory
+9. Create a ~.profile~ file in your home directory if it doesn't already exist.
 11. Download the nix installation script from https://nixos.org/nix/install as "install.sh", then execute:
    #+BEGIN_SRC bash
    sh install.sh
    #+END_SRC
 12. Copy contents of ~.profile~ to ~.zshrc~ (or rename ~.profile~ to ~.zshrc~ if it doesn't already exist)
 
+* Using the Nix Package Manager
+** Orientation
+NixOS implements reproducible builds using profiles (current) or flakes (experimental). These approaches don't work when using Nix as the package manager for a third-party system. Instead, we have to do imperative package management using the ~nix-env~ family of commands.
+
+** Documentation
+Major Nix commands have separate documentation for each higher-order flag; e.g., ~nix-env~ has separate man pages for ~nix-env --query~, ~nix-env --install~, etc.
+1. To get a list of the higher-order flags, run:
+   #+BEGIN_SRC bash
+   nix-env --help
+   #+END_SRC
+2. To get the man page for a specific flag, run:
+   #+BEGIN_SRC bash
+   # man page for `nix-env --query`
+   man nix-env-query
+   #+END_SRC
+
+** Update list of available packages
+  #+BEGIN_SRC bash
+  nix-channel --update
+  #+END_SRC
+
+** Show installed packages
+   This works for imperatively installed packages (installed with `nix-env -i`), but not for profiles or flakes.
+   #+BEGIN_SRC bash
+   # Show brief listing
+   nix-env -q
+
+   # Show complete installation profile
+   nix-env -q --json --meta
+   #+END_SRC
+
+** Search for packages
+1. Show available packages matching the symbolic name. This will output the attribute path (~--attr-path~ | ~-P~), which you can use to disambiguate between multiple versions of the package.
+   #+BEGIN_SRC bash
+   nix-env -qasP coreutils
+   #+END_SRC
+
+   #+BEGIN_EXAMPLE
+   -PS  nixpkgs.coreutils           coreutils-9.4
+   --S  nixpkgs.coreutils-prefixed  coreutils-9.4
+   #+END_EXAMPLE
+2. Show available packages matching the attribute path. This is much faster.
+   #+BEGIN_SRC bash
+   nix-env -qasA nixpkgs.coreutils
+   #+END_SRC
+
+   #+BEGIN_EXAMPLE
+   -PS  coreutils-9.4
+   #+END_EXAMPLE
+3. Show available packages matching a regular expression.
+   #+BEGIN_SRC bash
+   nix-env -qasP '.*LaTeXML.*'
+   #+END_SRC
+
+   #+BEGIN_EXAMPLE
+   --S  nixpkgs.perl536Packages.LaTeXML  perl5.36.3-LaTeXML-0.8.7
+   IPS  nixpkgs.perl538Packages.LaTeXML  perl5.38.2-LaTeXML-0.8.7
+   #+END_EXAMPLE
+   1. Show the package description
+    #+BEGIN_SRC bash
+    nix-env -qasA nixpkgs.coreutils --description
+    #+END_SRC
+
+    #+BEGIN_EXAMPLE
+    -PS  coreutils-9.4  The GNU Core Utilities
+    #+END_EXAMPLE
+4. Show the package location
+   #+BEGIN_SRC bash
+   nix-env -qasA nixpkgs.coreutils --drv-path
+   #+END_SRC
+
+   #+BEGIN_EXAMPLE
+   -PS  coreutils-9.4  /nix/store/xaia11jsmshb2scm9v6g5fh103i8hlvb-coreutils-9.4.drv
+   #+END_EXAMPLE
+
+** Install packages
+1. Install package by symbolic name
+   #+BEGIN_SRC bash
+   nix-env -i emacs-26.3
+   #+END_SRC
+2. Install package by attribute path
+   #+BEGIN_SRC bash
+   nix-env -iA nixpkgs.coreutils
+   nix-env -iA nixpkgs.perl538Packages.LaTeXML
+   #+END_SRC
+3. Remove package
+   #+BEGIN_SRC bash
+   nix-env -e <package>
+   #+END_SRC
+
+** Upgrade packages
+1. Show which packages will be upgraded
+   #+BEGIN_SRC bash
+   nix-env -u --dry-run
+  #+END_SRC
+2. Run the upgrade
+   #+BEGIN_SRC bash
+   nix-env -u
+  #+END_SRC
+3. Delete and recreate symbolic links for apps (i.e. Emacs; see installation instructions for more details)
+
+** Force an update of the package manager
+This usually isn't required.
+#+BEGIN_SRC bash
+nix upgrade-nix
+#+END_SRC
+
+** Remove older software versions from local cache
+1. Show list of installed generations
+   #+BEGIN_SRC bash
+   nix-env --list-generations
+   #+END_SRC
+2. Remove previous generations by ordinal distance (option 1)
+   #+BEGIN_SRC bash
+   # Remove all but last 3 generations
+   nix-env --delete-generations +3
+   nix-collect-garbage
+   #+END_SRC
+3. Remove previous generations by age (option 2)
+   #+BEGIN_SRC bash
+   # Optionally, delete and collect garbage in one pass
+   nix-collect-garbage --delete-older-than 60d
+   #+END_SRC
+
 * Install packages with Nix package manager
+** Install packages
+1. adoptopenjdk-hotspot-bin
+2. age
+3. darcs (required for Emacs interaction with /usr/share/zsh/<version>/functions)
+4. fish (required for Derek's Emacs configuration)
+5. htop
+6. ispell (required for Emacs)
+7. magic-wormhole
+8. nano
+9. nodejs
+10. pandoc
+11. poppler-utils (required for Emacs)
+12. ripgrep (required for Emacs)
+13. ruby 3.14
+14. stow (required for managing dot files)
+15. tree
+16. wget
+
+** Instructions for specific packages
 1. Emacs
-   1. Install with Nix
+   1. Get the complete version information of all the package variants. Installing by the symbolic name may not get you the latest version.
       #+BEGIN_SRC bash
-      nix-env -i emacs-26.3
+      nix-env -qasP emacs
+      nix-env -i emacs-29.1
       #+END_SRC
    2. Create symbolic link from application location to Applications folder
       #+BEGIN_SRC bash
@@ -205,151 +366,123 @@ Following https://www.philipp.haussleiter.de/2020/04/fixing-nix-setup-on-macos-c
       #+BEGIN_SRC bash
       nix-env -iA nixpkgs.coreutils
       #+END_SRC
-3. age
-4. darcs (required for Emacs interaction with /usr/share/zsh/<version>/functions)
-5. fish (required for Derek's Emacs configuration)
-6. htop
-7. imagemagick
+3. imagemagick
    #+BEGIN_SRC bash
    nix-env -i ghostscript
    nix-env -iA nixpkgs.imagemagick7
    #+END_SRC
-8. ispell (required for Emacs)
-9. magic-wormhole
-10. nano
-11. nodejs
-12. pandoc
-13. ripgrep
-14. ruby
-15. ruff (optional, syntax checking in Python)
-16. stow (required for managing dot files)
-17. tree
-18. wget
-19. man-db (caches man pages for faster loading in Emacs)
-    1. Install man-db
+4. man-db (caches man pages for faster loading in Emacs)
+   1. Install man-db
+     #+BEGIN_SRC bash
+     nix-env -i man-db
+     #+END_SRC
+   2. Create /var/cache/man directory and set owner to logged in user
+     #+BEGIN_SRC bash
+     cd /var/
+     sudo mkdir cache/man
+     sudo chown -R <user>:<group> cache/
+     #+END_SRC
+   3. Create database
       #+BEGIN_SRC bash
-      nix-env -i man-db
+      sudo mandb
+
+      # If the database becomes corrupt, recreate it:
+      sudo mandb -c
       #+END_SRC
-
-    2. Create /var/cache/man directory and set owner to logged in user
-      #+BEGIN_SRC bash
-      cd /var/
-      sudo mkdir cache/man
-      sudo chown -R <user>:<group> cache/
-      #+END_SRC
-
-    3. Create database
-       #+BEGIN_SRC bash
-       sudo mandb
-
-       # If the database becomes corrupt, recreate it:
-       sudo mandb -c
-       #+END_SRC
-
-* Update Nix packages
-1. Show installed packages
-   This works for imperatively installed packages (installed with `nix-env -i`), but not for profiles.
+5. LaTeXML
    #+BEGIN_SRC bash
-   # Show brief listing
-   nix-env -q
+   nix-env -qasP '.*LaTeXML.*'
+   nix-env -qaA nixpkgs.perl538Packages.LaTeXML
 
-   # Show complete installation profile
-   nix-env -q --json --meta
+   nix-env -iA nixpkgs.perl538Packages.LaTeXML
    #+END_SRC
-2. Update channels
-  #+BEGIN_SRC bash
-  nix-channel --update
-  #+END_SRC
-3. Upgrade packages
-  #+BEGIN_SRC bash
-    nix-env -u --dry-run            # See what packages will be upgraded
-    nix-env -u                      # Run upgrade
-  #+END_SRC
-4. Delete and recreate symbolic links for apps
-5. Remove older software versions from cache
-  #+BEGIN_SRC bash
-  nix-env --list-generations
 
-  # Remove all but last 3 generations
-  nix-env --delete-generations +3
-  nix-collect-garbage
-
-  # Optionally, delete and collect garbage in one pass
-  #nix-collect-garbage --delete-older-than 60d
-  #+END_SRC
-6. Force an update of the package manager
-  #+BEGIN_SRC bash
-  nix upgrade-nix
-  #+END_SRC
-7. Remove package
-   #+BEGIN_SRC bash
-   nix-env -e <package>
-   #+END_SRC
+** COMMENT Potentially unneeded packages
+1. fontconfig
+2. mariadb-client
 
 * Shell configuration
 Clone the dot file repository https://github.com/devnich/dotfiles into your home directory and follow the installation instructions in the README. Note that some files (e.g., ~.zshenv~, ~.nix-channel~) may conflict with files you have already created during the setup process. If this happens, you should merge the contents of each "live" file into its respective repository version before running the ~stow~ command.
 
-* Force Office to save locally
-1. Stay signed out of office
-2. Tweak privacy settings: https://docs.microsoft.com/en-us/deployoffice/privacy/mac-privacy-preferences
+* Python Anaconda distribution
+** Install for single user
+Install Python 3 version. After installation, ~which python~ should report that Python is installed in ~/Users/<your user name>/opt/anaconda3/bin/python~. If it reports the system Python location, copy the relevant lines from ~.bash_profile~ to ~.zshrc~.
 
-* Install Python Anaconda distribution (single user)
-1. Install Python 3 version
-   After installation, ~which python~ should report that Python is installed in ~/Users/<your user name>/opt/anaconda3/bin/python~. If it reports the system Python location, copy the relevant lines from ~.bash_profile~ to ~.zshrc~.
-2. Deactivate Anaconda to use system Python or utilities
+** Using Conda environments
+1. Deactivate Anaconda to use system Python or utilities
   #+BEGIN_SRC bash
-    # Deactivate Anaconda install
-    conda deactivate
-    which python                    # outputs /usr/bin/python
-    # Reactivate
-    conda activate
-    which python                    # outputs /Users/<user_name>/opt/anaconda3/bin/python
+  # Deactivate Anaconda install
+  conda deactivate
+  which python                    # outputs /usr/bin/python
+
+  # Reactivate
+  conda activate
+  which python                    # outputs /Users/<user_name>/opt/anaconda3/bin/python
   #+END_SRC
-3. Check for updates
+2. Create a virtual environment
+   1. Option 1: Create an environment with selected libraries
+     #+BEGIN_SRC bash
+     conda create -n <env name> google-api-python-client pandas
+     #+END_SRC
+   2. Option 2: Create an environment cloned from a preexisting environment
+      #+BEGIN_SRC bash
+      conda create -n <env name> --clone base
+      #+END_SRC
+   3. Option 3: Create an environment following a YAML spec
+      #+BEGIN_SRC bash
+      conda env create -f <env file name>.yml
+      #+END_SRC
+3. Show environment
+   #+BEGIN_SRC bash
+   conda env list
+   #+END_SRC
+4. Switch to environment
+   #+BEGIN_SRC bash
+   conda activate <env name>
+   #+END_SRC
+5. Export current environment to YAML
+   #+BEGIN_SRC bash
+   conda env export > <env file name>.yml
+   #+END_SRC
+6. Install additional software with ~pip~
+    *Always do this last.* Conda cannot correctly install or update an environment that has been touched by ~pip~.
+    #+BEGIN_SRC bash
+    pip install search_sampler
+    #+END_SRC
+7. Remove environment
+   #+BEGIN_SRC bash
+   conda env remove -n <env name>
+   #+END_SRC
+8. References
+   1. https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html
+   2. https://docs.python.org/3/tutorial/modules.html
+
+** Installing packages
+1. Find new packages
+  #+BEGIN_SRC bash
+  conda search -i/v <package-name>
+  #+END_SRC
+2. Install new packages
+  #+BEGIN_SRC bash
+  conda install <package-name>
+  #+END_SRC
+
+** Update Python, Conda, and Python packages
+1. Check for updates
   #+BEGIN_SRC bash
   conda update --all --dry-run
   #+END_SRC
-4. Update conda package manager (may also update other packages)
+2. Update conda package manager (may also update other packages)
   #+BEGIN_SRC bash
   # conda update -n base conda
   conda update -n base -c defaults conda
   #+END_SRC
-5. Update default (base) environment
+3. Update default (base) environment
   #+BEGIN_SRC bash
   conda update --all
   #+END_SRC
-6. Find new packages
-  #+BEGIN_SRC bash
-  conda search -i/v <package-name>
-  #+END_SRC
-7. Install new packages
-  #+BEGIN_SRC bash
-  conda install <package-name>
-  #+END_SRC
-8. Create Python virtual environments
-  #+BEGIN_SRC bash
-  # Create environment with selected libraries
-  conda create -n <env name> google-api-python-client pandas
-  # Alternatively, create a new environment cloned from a preexisting environment
-  conda create -n <env name> --clone base
-  # Alternatively, create a new environment following a YAML spec
-  conda env create -f <env file name>.yml
-  # Show environment
-  conda env list
-  # Switch to environment
-  conda activate <env name>
-  # Export current environment to YAML
-  conda env export > <env file name>.yml
-  # Install additional software with pip; always do this last
-  pip install search_sampler
-  #  Remove environment
-  conda env remove -n <env name>
-  #+END_SRC
-9. References
-   1. https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html
-   2. https://docs.python.org/3/tutorial/modules.html
 
-* Install Python Anaconda distribution (multi-user)
+** Install Python Anaconda distribution for multi-user (NOT RECOMMENDED)
 1. If installing Anaconda on a lab machine, choose the multi-user installation
 2. In a multi-user installation, you cannot start Jupyter Lab from the Anaconda Navigator launcher. There are two work-arounds:
    1. Launch the Anaconda Powershell prompt and run
@@ -360,8 +493,9 @@ Clone the dot file repository https://github.com/devnich/dotfiles into your home
 
 * Install R
 1. Install R from CRAN: https://cran.r-project.org
-2. Install RStudio IDE
-3. Use R language manager to install useful libraries
+2. Install RStudio IDE: https://posit.co/products/open-source/rstudio/
+3. Install XQuartz: https://www.xquartz.org
+4. Use R language manager to install useful libraries
    #+BEGIN_SRC R
    install.packages("tidyverse")
    install.packages("rmarkdown")
@@ -369,19 +503,40 @@ Clone the dot file repository https://github.com/devnich/dotfiles into your home
    install.packages("renv")
    install.packages("lintr")
    #+END_SRC
-4. Check whether R is available as a Jupyter kernel (optional)
-   #+BEGIN_SRC bash
-   jupyter kernelspec list
-   #+END_SRC
-5. If R kernel not listed, install it (optional)
-   #+BEGIN_SRC R
-   install.packages('IRkernel')
-   IRkernel::installspec()
-   #+END_SRC
+5. Install Jupyter kernel for R
+   1. Check whether R as a Jupyter kernel
+      #+BEGIN_SRC bash
+      jupyter kernelspec list
+      #+END_SRC
+   2. If R kernel not listed, install it
+      #+BEGIN_SRC R
+      install.packages('IRkernel')
+      IRkernel::installspec()
+      #+END_SRC
 6. If installing TinyTeX (Bookdown dependency), change owner of "/usr/local/bin"
    #+BEGIN_SRC bash
    sudo chown -R `whoami`:admin /usr/local/bin
    #+END_SRC
+
+* Install Julia
+1. Install binary: https://julialang.org/downloads/
+2. Add Julia kernel to Jupyter Lab
+   #+BEGIN_SRC R
+   using Pkg
+   Pkg.add("IJulia")
+   #+END_SRC
+3. Make Julia available in path
+   #+BEGIN_SRC bash
+   # Remove original /usr/local/bin/julia symlink if it exists
+   ln -s /Applications/Julia-1.8.app/Contents/Resources/julia/bin/julia /usr/local/bin/julia
+   #+END_SRC
+4. Remove old kernel version from Jupyter Lab
+   #+BEGIN_SRC bash
+   jupyter kernelspec list
+   jupyter kernelspec uninstall <kernel-name>
+   #+END_SRC
+
+* (Optional) Assorted research and developer tools
 ** Build Bookdown book (e.g., "Advanced R")
 c.f. https://bookdown.org/yihui/bookdown/build-the-book.html
 #+BEGIN_SRC R
@@ -389,42 +544,7 @@ bookdown::render_book() # Test for dependencies via repeated failure
 bookdown::render_book('index.Rmd', 'bookdown::pdf_book')
 #+END_SRC
 
-* Install XQuartz
-https://www.xquartz.org
-
-* Install Julia
-1. Install binary
-   https://julialang.org/downloads/
-
-2. Add Julia kernel to Jupyter Lab
-   #+BEGIN_SRC R
-   using Pkg
-   Pkg.add("IJulia")
-   #+END_SRC
-
-3. Make Julia available in path
-   #+BEGIN_SRC bash
-   # Remove original /usr/local/bin/julia symlink if it exists
-   ln -s /Applications/Julia-1.8.app/Contents/Resources/julia/bin/julia /usr/local/bin/julia
-   #+END_SRC
-
-4. Remove old kernel version from Jupyter Lab
-   #+BEGIN_SRC bash
-   jupyter kernelspec list
-   jupyter kernelspec uninstall <kernel-name>
-   #+END_SRC
-
-* Restore from CrashPlan
-1. View web console: https://www.crashplan.com/console
-2. Restart CrashPlan service
-   #+BEGIN_SRC bash
-   # Stop Crashplan
-   sudo launchctl unload /Library/LaunchDaemons/com.code42.service.plist
-   # Start Crashplan
-   sudo launchctl load /Library/LaunchDaemons/com.code42.service.plist
-   #+END_SRC
-
-* Install CLAN
+** Install CLAN
 1. Give full disk access to Terminal
    1. Go to System Preferences \rightarrow Security & Privacy \rightarrow Full Disk Access
    2. Check Terminal (or add with + if it doesn't already appear in the list of programs)
@@ -452,11 +572,10 @@ https://www.xquartz.org
    1. cd into unix-clan/examples
    2. Type "freq sample.cha"
 
-* Compile and serve Github pages locally with Jekyll
-** Documentation
-1. https://jekyllrb.com
+** Compile and serve UC Love Data Week website locally with Jekyll
+Documentation: https://jekyllrb.com
 
-** Install
+*** Install
 1. Install Jekyll and dependencies
    #+BEGIN_SRC bash
    gem install bundler
@@ -478,34 +597,15 @@ https://www.xquartz.org
    jekyll serve
    #+END_SRC
 
-** Project structure
+*** Project structure
 1. pages are composed of layouts and includes
 2. data from spreadsheet goes in data
 3. liquid is part of jekyll build process in github
 4. liquid statements can iterate through YAML files as if they are complex data structures
 5. content and dates pulled from workshops.yml
 
-* COMMENT To Do
-1. Use specific Python and R environments in Jupyter/RStudio
-2. Emacs Python/R workflow
-   1. Conda environments and Anaconda mode: https://github.com/necaris/conda.el
-   2. R environments
-   3. graphs, tables, and other output
-3. sorting by file/process provides stable sort of files but not directories
-4. Fix Xquartz and imagemagick in Emacs (maybe?)
-     https://imagemagick.org/script/display.php
-     https://imagemagick.org/script/download.php
-     https://www.xquartz.org/FAQs.html
-5. zsh configuration
-   1. [DONE] Customize colors
-      https://geoff.greer.fm/lscolors/
-   2. completions?
-   3. completions for nix?
-   4. fish-like syntax highlighting and other modifications?
-6. Nix profile management with delegated update (e.g. NPM, apps, conda, R)
-7. Export Nix settings
-
-* COMMENT DEPRECATED Install R using conda
+* COMMENT DEPRECATED Tools
+** Install R using conda
    cf. https://community.rstudio.com/t/why-not-r-via-conda/9438/4
    #+BEGIN_SRC bash
      # conda install -c r r-base # this breaks
@@ -513,12 +613,12 @@ https://www.xquartz.org
      conda create -n <env name> r-essentials
    #+END_SRC
 
-* COMMENT Catalina performance
-1. Round-trip for checking scripts - visible on emacs .org file open?
-2. Forbid outgoing connections for syspolicyd to api.apple-cloudkit.com via pfctl (command line) or Murus (GUI)?
+** Restore from CrashPlan
+1. View web console: https://www.crashplan.com/console
+2. Restart CrashPlan service
    #+BEGIN_SRC bash
-   # View outgoing permissions connections
-   sudo log stream --debug --info --predicate "processImagePath contains 'tccd' OR processImagePath contains 'syspolicyd' OR processImagePath Contains[c] 'taskgated' OR processImagePath contains 'trustd' OR eventMessage Contains[c] 'malware' OR senderImagePath Contains[c] 'security' "
+   # Stop Crashplan
+   sudo launchctl unload /Library/LaunchDaemons/com.code42.service.plist
+   # Start Crashplan
+   sudo launchctl load /Library/LaunchDaemons/com.code42.service.plist
    #+END_SRC
-3. Forbid outgoing connections from trustd
-4. Check that firewall settings don't block Google sync, Box, etc
