@@ -498,12 +498,21 @@ Install Python 3 version. After installation, ~which python~ should report that 
 4. Use R language manager to install useful libraries
    #+BEGIN_SRC R
    install.packages("tidyverse")
-   install.packages("rmarkdown")
-   install.packages("bookdown")
+
+   # Required for building Hadley's Advanced R book
+   install.packages(c("rmarkdown", "bookdown", "downlit", "lobstr", "sloop", "tinytex"))
+   install.packages("devtools")
+   devtools::install_github("hadley/emo")
+
+   # Optional utilities
    install.packages("renv")
    install.packages("lintr")
    #+END_SRC
-5. Install Jupyter kernel for R
+5. If installing TinyTeX (Bookdown dependency for generating PDFs), change owner of "/usr/local/bin"
+   #+BEGIN_SRC bash
+   sudo chown -R `whoami`:admin /usr/local/bin
+   #+END_SRC
+6. Install Jupyter kernel for R
    1. Check whether R as a Jupyter kernel
       #+BEGIN_SRC bash
       jupyter kernelspec list
@@ -513,9 +522,9 @@ Install Python 3 version. After installation, ~which python~ should report that 
       install.packages('IRkernel')
       IRkernel::installspec()
       #+END_SRC
-6. If installing TinyTeX (Bookdown dependency), change owner of "/usr/local/bin"
-   #+BEGIN_SRC bash
-   sudo chown -R `whoami`:admin /usr/local/bin
+7. Update R packages. Do this after you update R.
+   #+BEGIN_SRC R
+   update.packages(ask = FALSE)
    #+END_SRC
 
 * Install Julia
@@ -539,10 +548,14 @@ Install Python 3 version. After installation, ~which python~ should report that 
 * (Optional) Assorted research and developer tools
 ** Build Bookdown book (e.g., "Advanced R")
 c.f. https://bookdown.org/yihui/bookdown/build-the-book.html
-#+BEGIN_SRC R
-bookdown::render_book() # Test for dependencies via repeated failure
-bookdown::render_book('index.Rmd', 'bookdown::pdf_book')
-#+END_SRC
+1. Test for dependencies via repeated failure
+   #+BEGIN_SRC R
+   bookdown::render_book()
+   #+END_SRC
+2. Build the PDF
+   #+BEGIN_SRC R
+   bookdown::render_book('index.Rmd', 'bookdown::pdf_book')
+   #+END_SRC
 
 ** Install CLAN
 1. Give full disk access to Terminal
