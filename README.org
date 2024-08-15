@@ -321,6 +321,10 @@ Major Nix commands have separate documentation for each higher-order flag; e.g.,
   #+END_SRC
 3. Delete and recreate symbolic links for apps (i.e. Emacs; see installation instructions for more details)
 4. Restore Full-Disk Access privileges for updated apps
+5. Run mandb to recreate man page database
+   #+BEGIN_SRC bash
+   sudo mandb -c
+   #+END_SRC
 
 ** Force an update of the package manager
 This usually isn't required.
@@ -417,12 +421,12 @@ nix upgrade-nix
      sudo chown -R <user>:<group> cache/
      #+END_SRC
    3. Create database
-      #+BEGIN_SRC bash
-      sudo mandb
+     #+BEGIN_SRC bash
+     sudo mandb
 
-      # If the database becomes corrupt, recreate it:
-      sudo mandb -c
-      #+END_SRC
+     # If the database becomes corrupt, recreate it:
+     sudo mandb -c
+     #+END_SRC
 5. LaTeXML
    #+BEGIN_SRC bash
    nix-env -qasP '.*LaTeXML.*'
@@ -727,3 +731,20 @@ Documentation: https://jekyllrb.com
    # Start Crashplan
    sudo launchctl load /Library/LaunchDaemons/com.code42.service.plist
    #+END_SRC
+
+* COMMENT How to export this document to other formats
+** Export to Markdown using Pandoc
+Do this if you want code syntax highlighting and a table of contents on Github.
+
+1. Generate Markdown file
+   #+BEGIN_SRC bash
+   pandoc -f org -t gfm --toc --toc-depth=2 --wrap=none -N -s README.org -o README.md
+   #+END_SRC
+
+2. Delete anything above the Table of Contents, e.g.:
+   #+BEGIN_EXAMPLE
+   -------------------------
+     Title
+     Derek Devnich
+   -------------------------
+   #+END_EXAMPLE
